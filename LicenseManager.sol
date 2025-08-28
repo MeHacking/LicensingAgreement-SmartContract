@@ -29,6 +29,10 @@ contract LicenseManager {
         _;
     }
 
+    // Emitovanje dogadjaja
+    event LicensePurchased(address indexed client, uint256 expiresAt);
+    event LicenseRenewed(address indexed client, uint256 expiresAt);
+
     // Kupovina licence
     function buyLicense() external payable onlyClient {
         require(msg.value == price, "Wrong price");
@@ -39,6 +43,7 @@ contract LicenseManager {
         L.code = generateCode(msg.sender);
         L.active = true;
         clients.push(msg.sender);
+        emit LicensePurchased(msg.sender, L.expiresAt);
     }
 
     // Obnova licence
@@ -50,6 +55,7 @@ contract LicenseManager {
         require(block.timestamp < L.expiresAt, "Expired already");
 
         L.expiresAt = L.expiresAt + 30 days;
+        emit LicenseRenewed(msg.sender, L.expiresAt);
     }
 
     // Uvid klijenta u svoju licencu
